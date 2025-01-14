@@ -84,7 +84,6 @@ class SKST_Admin {
         add_action( 'admin_menu', array( $this, 'skst_admin_menu' ) );
         add_action( 'admin_post_skst_save_general_settings', [ $this, 'skst_save_general_settings' ] );
 
-
     }
 
     /**
@@ -93,6 +92,7 @@ class SKST_Admin {
      * @return void
      */
     private function includes() {
+        add_action( 'wp_enqueue_scripts', [ $this, 'skst_enqueue_frontend_assets' ] );
 
     }
 
@@ -121,17 +121,29 @@ class SKST_Admin {
      * Render the settings page for Scroll to Top plugin.
      */
     function skst_scroll_to_top_render() {
-        $background_color    = get_option( 'skst_background_color', '#ffffff' );
-        $icon_color          = get_option( 'skst_icon_color', '#000000' );
-        $icon_width          = get_option( 'skst_icon_width', 50 );
-        $icon_height         = get_option( 'skst_icon_height', 50 );
-        $icon_border_radius  = get_option( 'skst_icon_border_radius', 50 );
-        $button_position     = get_option( 'skst_button_position', 'bottom-right' );
+        $icon_size             = get_option( 'skst_icon_size',25 );
+        $background_color      = get_option( 'skst_background_color', '#ffffff' );
+        $icon_color            = get_option( 'skst_icon_color', '#000000' );
+        $button_width          = get_option( 'skst_button_width', 50 );
+        $button_height         = get_option( 'skst_button_height', 50 );
+        $button_border_radius  = get_option( 'skst_button_border_radius', 50 );
+        $button_position       = get_option( 'skst_button_position', 'bottom-right' );
+        $button_position_x     = get_option( 'skst_button_position_x', 30 );
+        $button_position_y    = get_option( 'skst_button_position_y', 30 );
+
         ?>
         <div class="wrap">
             <h2><?php esc_html_e( 'General Settings', 'sk-scroll-to-top' ); ?></h2>
+            <div>
             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                 <table class="form-table">
+                    <tr>
+                        <th scope="row"><label for="icon_size"><?php esc_html_e( 'Icon Size(px)', 'sk-scroll-to-top' ); ?></label></th>
+                        <td>
+                            <input type="number" name="icon_size" id="icon_size" value="<?php echo esc_attr( $icon_size ); ?>"/>
+                            <p><?php esc_html_e( 'Select scroll to top button icon size pixels.', 'sk-scroll-to-top' ); ?></p>
+                        </td>
+                    </tr>
                     <tr>
                         <th scope="row"><label for="background_color"><?php esc_html_e( 'Background Color', 'sk-scroll-to-top' ); ?></label></th>
                         <td>
@@ -147,23 +159,23 @@ class SKST_Admin {
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="icon_width"><?php esc_html_e( 'Icon Width (px)', 'sk-scroll-to-top' ); ?></label></th>
+                        <th scope="row"><label for="button_width"><?php esc_html_e( 'Button Width (px)', 'sk-scroll-to-top' ); ?></label></th>
                         <td>
-                            <input type="number" name="icon_width" id="icon_width" min="1" value="<?php echo esc_attr( $icon_width ); ?>"/>
+                            <input type="number" name="button_width" id="button_width" min="1" value="<?php echo esc_attr( $button_width ); ?>"/>
                             <p><?php esc_html_e( 'Enter the width of the button in pixels.', 'sk-scroll-to-top' ); ?></p>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="icon_height"><?php esc_html_e( 'Icon Height (px)', 'sk-scroll-to-top' ); ?></label></th>
+                        <th scope="row"><label for="button_height"><?php esc_html_e( 'Button Height (px)', 'sk-scroll-to-top' ); ?></label></th>
                         <td>
-                            <input type="number" name="icon_height" id="icon_height" min="1" value="<?php echo esc_attr( $icon_height ); ?>"/>
+                            <input type="number" name="button_height" id="button_height" min="1" value="<?php echo esc_attr( $button_height ); ?>"/>
                             <p><?php esc_html_e( 'Enter the height of the button in pixels.', 'sk-scroll-to-top' ); ?></p>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="icon_border_radius"><?php esc_html_e( 'Border Radius (px)', 'sk-scroll-to-top' ); ?></label></th>
+                        <th scope="row"><label for="button_border_radius"><?php esc_html_e( 'Border Radius (px)', 'sk-scroll-to-top' ); ?></label></th>
                         <td>
-                            <input type="number" name="icon_border_radius" id="icon_border_radius" min="1" value="<?php echo esc_attr( $icon_border_radius ); ?>"/>
+                            <input type="number" name="button_border_radius" id="button_border_radius" min="1" value="<?php echo esc_attr( $button_border_radius ); ?>"/>
                             <p><?php esc_html_e( 'Enter the border radius of the button in pixels.', 'sk-scroll-to-top' ); ?></p>
                         </td>
                     </tr>
@@ -177,11 +189,27 @@ class SKST_Admin {
                             <p><?php esc_html_e( 'Select the position of the button.', 'sk-scroll-to-top' ); ?></p>
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row"><label for="button_position_x"><?php esc_html_e( 'Button positionX (px)', 'sk-scroll-to-top' ); ?></label></th>
+                        <td>
+                            <input type="number" name="button_position_x" id="button_position_x" min="1" value="<?php echo esc_attr( $button_position_x ); ?>"/>
+                            <p><?php esc_html_e( 'Enter the  positionX of the button in pixels.', 'sk-scroll-to-top' ); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="button_position_y"><?php esc_html_e( 'Button positionY(px)', 'sk-scroll-to-top' ); ?></label></th>
+                        <td>
+                            <input type="number" name="button_position_y" id="button_position_y" min="1" value="<?php echo esc_attr( $button_position_x ); ?>"/>
+                            <p><?php esc_html_e( 'Enter the  positionY of the button in pixels.', 'sk-scroll-to-top' ); ?></p>
+                        </td>
+                    </tr>
                 </table>
                 <?php wp_nonce_field( 'skst_general_settings' ); ?>
                 <input type="hidden" name="action" value="skst_save_general_settings">
                 <?php submit_button( __( 'Save Settings', 'sk-scroll-to-top' ) ); ?>
             </form>
+
+           </div>
         </div>
         <?php
     }
@@ -190,33 +218,61 @@ class SKST_Admin {
      * Save the settings for the Scroll to Top plugin.
      */
     function skst_save_general_settings() {
-        // Verify nonce for security
         check_admin_referer( 'skst_general_settings' );
-
-        // Check user capabilities
         if ( ! current_user_can( 'manage_options' ) ) {
             return false;
         }
-
-        // Retrieve and sanitize input values
+        $icon_size          = isset( $_POST['icon_size'] ) ? absint( wp_unslash( $_POST['icon_size'] ) ) : 25;
         $background_color   = isset( $_POST['background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['background_color'] ) ) : '#ffffff';
         $icon_color         = isset( $_POST['icon_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['icon_color'] ) ) : '#000000';
-        $icon_width         = isset( $_POST['icon_width'] ) ? absint( wp_unslash( $_POST['icon_width'] ) ) : 50;
-        $icon_height        = isset( $_POST['icon_height'] ) ? absint( wp_unslash( $_POST['icon_height'] ) ) : 50;
-        $icon_border_radius = isset( $_POST['icon_border_radius'] ) ? absint( wp_unslash( $_POST['icon_border_radius'] ) ) : 50;
+        $button_width         = isset( $_POST['button_width'] ) ? absint( wp_unslash( $_POST['button_width'] ) ) : 50;
+        $button_height        = isset( $_POST['button_height'] ) ? absint( wp_unslash( $_POST['button_height'] ) ) : 50;
+        $button_border_radius = isset( $_POST['button_border_radius'] ) ? absint( wp_unslash( $_POST['button_border_radius'] ) ) : 50;
         $button_position    = isset( $_POST['button_position'] ) ? sanitize_text_field( wp_unslash( $_POST['button_position'] ) ) : 'bottom-right';
+        $button_position_x    = isset( $_POST['button_position_x'] ) ? absint( wp_unslash( $_POST['button_position_x'] ) ) : 30;
+        $button_position_y    = isset( $_POST['button_position_y'] ) ? absint( wp_unslash( $_POST['button_position_y'] ) ) : 30;
 
-        // Save options
+        update_option( 'skst_icon_size', $icon_size );
         update_option( 'skst_background_color', $background_color );
         update_option( 'skst_icon_color', $icon_color );
-        update_option( 'skst_icon_width', $icon_width );
-        update_option( 'skst_icon_height', $icon_height );
-        update_option( 'skst_icon_border_radius', $icon_border_radius );
+        update_option( 'skst_button_width', $button_width );
+        update_option( 'skst_button_height', $button_height );
+        update_option( 'skst_button_border_radius', $button_border_radius );
         update_option( 'skst_button_position', $button_position );
+        update_option( 'skst_button_position_x', $button_position_x );
+        update_option( 'skst_button_position_y', $button_position_y );
 
-        // Redirect back to the settings page
         wp_safe_redirect( admin_url( 'admin.php?page=sk-scroll-to-top&status=success' ) );
         exit;
     }
+   /**
+    * load frontend scripts
+    */
+   public function skst_enqueue_frontend_assets()
+    {
+        wp_enqueue_script(
+            'skst-scroll-to-top',
+            SKST_PLUGIN_URL . 'assets/js/frontend.js',
+            array( 'jquery' ),
+            $this->version,
+            true
+        );
+        $settings = [
+            'iconSize'          => get_option( 'skst_icon_size', 25 ),
+            'backgroundColor'   => get_option( 'skst_background_color', '#ffffff' ),
+            'iconColor'         => get_option( 'skst_icon_color', '#000000' ),
+            'buttonWidth'         => get_option( 'skst_icon_width', 50 ),
+            'buttonHeight'        => get_option( 'skst_icon_height', 50 ),
+            'iconBorderRadius'  => get_option( 'skst_icon_border_radius', 50 ),
+            'buttonPosition'    => get_option( 'skst_button_position', 'bottom-right' ),
+            'buttonPositionX'    => get_option( 'skst_button_position_x', 30 ),
+            'buttonPositionY'    => get_option( 'skst_button_position_y', 30 ),
+
+
+        ];
+        wp_localize_script( 'skst-scroll-to-top', 'skstSettings', $settings);
+    }
+
+
 
 }
