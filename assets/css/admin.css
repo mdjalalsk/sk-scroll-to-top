@@ -1,0 +1,18 @@
+.skst-container{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.skst-preview-container{
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+}
+#skst-preview{
+    position: relative;
+    width: 500px;
+    height: 500px;
+    border: 1px solid black;
+}

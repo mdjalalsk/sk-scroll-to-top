@@ -5,19 +5,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Main Plugin Class
+ * Main SKST_Admin Class
  *
  * This class initializes the plugin, sets up core properties and methods,
  * and handles instantiation through a singleton pattern.
  *
- * @package Plugin
+ * @package SKST_Admin
+ * @since 1.0.0
  */
 class SKST_Admin {
 
     /**
-     * Singleton instance of the Plugin class.
+     * Singleton instance of the SKST_Admin class.
      *
      * @var SKST_Admin|null
+     * @since 1.0.0
      */
     public static $instance = null;
 
@@ -25,6 +27,7 @@ class SKST_Admin {
      * Current version of the plugin.
      *
      * @var string
+     * @since 1.0.0
      */
     public $version = '1.0.0';
 
@@ -32,6 +35,7 @@ class SKST_Admin {
      * The main plugin file.
      *
      * @var string
+     * @since 1.0.0
      */
     public $file;
 
@@ -40,6 +44,7 @@ class SKST_Admin {
      *
      * @param string $file Main plugin file.
      * @param string $version Plugin version.
+     * @since 1.0.0
      */
     private function __construct( $file, $version ) {
         $this->version              = $version;
@@ -55,6 +60,7 @@ class SKST_Admin {
      * @param string $file Main plugin file.
      * @param string $version Plugin version.
      * @return SKST_Admin The singleton instance of the Plugin class.
+     * @since 1.0.0
      */
     public static function get_instance( $file, $version ) {
         if ( null === self::$instance ) {
@@ -67,6 +73,7 @@ class SKST_Admin {
      * Defines necessary constants for the plugin.
      *
      * @return void
+     * @since 1.0.0
      */
     private function define_constants() {
         define( 'SKST_PLUGIN_VERSION', $this->version );
@@ -79,20 +86,22 @@ class SKST_Admin {
      * Initializes necessary hooks for the plugin.
      *
      * @return void
+     * @since 1.0.0
      */
     private function init_hooks() {
         add_action( 'admin_menu', array( $this, 'skst_admin_menu' ) );
         add_action( 'admin_post_skst_save_general_settings', [ $this, 'skst_save_general_settings' ] );
-
     }
 
     /**
      * Includes necessary files for the plugin's functionality.
      *
      * @return void
+     * @since 1.0.0
      */
     private function includes() {
         add_action( 'wp_enqueue_scripts', [ $this, 'skst_enqueue_frontend_assets' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'skst_enqueue_admin_assets' ] );
 
     }
 
@@ -104,6 +113,7 @@ class SKST_Admin {
      * WordPress's `admin_menu` action.
      *
      * @return void
+     * @since 1.0.0
      */
     public function skst_admin_menu() {
         add_menu_page(
@@ -118,7 +128,12 @@ class SKST_Admin {
         remove_submenu_page( 'sk-scroll-to-top', 'sk-scroll-to-top' );
     }
     /**
-     * Render the settings page for Scroll to Top plugin.
+     * Renders the settings page for the Scroll to Top plugin.
+     *
+     * Displays a form with options for configuring the Scroll to Top button.
+     *
+     * @return void
+     * @since 1.0.0
      */
     function skst_scroll_to_top_render() {
         $icon_size             = get_option( 'skst_icon_size',25 );
@@ -134,7 +149,7 @@ class SKST_Admin {
         ?>
         <div class="wrap">
             <h2><?php esc_html_e( 'General Settings', 'sk-scroll-to-top' ); ?></h2>
-            <div>
+            <div class="skst-container">
             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                 <table class="form-table">
                     <tr>
@@ -208,19 +223,27 @@ class SKST_Admin {
                 <input type="hidden" name="action" value="skst_save_general_settings">
                 <?php submit_button( __( 'Save Settings', 'sk-scroll-to-top' ) ); ?>
             </form>
-
+             <div class="skst-preview-container">
+                 <div id="skst-preview">
+                 </div>
+             </div>
            </div>
         </div>
         <?php
     }
 
     /**
-     * Save the settings for the Scroll to Top plugin.
+     * Saves the settings for the Scroll to Top plugin.
+     *
+     * Handles form submission and updates plugin settings in the database.
+     *
+     * @return void
+     * @since 1.0.0
      */
     function skst_save_general_settings() {
         check_admin_referer( 'skst_general_settings' );
         if ( ! current_user_can( 'manage_options' ) ) {
-            return false;
+            return;
         }
         $icon_size          = isset( $_POST['icon_size'] ) ? absint( wp_unslash( $_POST['icon_size'] ) ) : 25;
         $background_color   = isset( $_POST['background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['background_color'] ) ) : '#ffffff';
@@ -245,9 +268,13 @@ class SKST_Admin {
         wp_safe_redirect( admin_url( 'admin.php?page=sk-scroll-to-top&status=success' ) );
         exit;
     }
-   /**
-    * load frontend scripts
-    */
+
+    /**
+     * Enqueues frontend assets for the Scroll to Top button.
+     *
+     * @return void
+     * @since 1.0.0
+     */
    public function skst_enqueue_frontend_assets()
     {
         wp_enqueue_script(
@@ -261,18 +288,26 @@ class SKST_Admin {
             'iconSize'          => get_option( 'skst_icon_size', 25 ),
             'backgroundColor'   => get_option( 'skst_background_color', '#ffffff' ),
             'iconColor'         => get_option( 'skst_icon_color', '#000000' ),
-            'buttonWidth'         => get_option( 'skst_icon_width', 50 ),
-            'buttonHeight'        => get_option( 'skst_icon_height', 50 ),
-            'iconBorderRadius'  => get_option( 'skst_icon_border_radius', 50 ),
+            'buttonWidth'         => get_option( 'skst_button_width', 50 ),
+            'buttonHeight'        => get_option( 'skst_button_height', 50 ),
+            'buttonBorderRadius'  => get_option( 'skst_button_border_radius', 50 ),
             'buttonPosition'    => get_option( 'skst_button_position', 'bottom-right' ),
             'buttonPositionX'    => get_option( 'skst_button_position_x', 30 ),
             'buttonPositionY'    => get_option( 'skst_button_position_y', 30 ),
-
-
         ];
         wp_localize_script( 'skst-scroll-to-top', 'skstSettings', $settings);
     }
 
-
-
+    /**
+     * Enqueues admin assets for the Sk Scroll to Top plugin.
+     *
+     * @return void
+     * @since 1.0.0
+     */
+    public function skst_enqueue_admin_assets($hook){
+         if('toplevel_page_sk-scroll-to-top'=== $hook){
+             wp_enqueue_style('skst-admin-css', SKST_PLUGIN_URL . 'assets/css/admin.css',array(),$this->version);
+             wp_enqueue_script('skst-admin-js', SKST_PLUGIN_URL . 'assets/js/admin.js', array('jquery'),$this->version,['in_footer'=>true]);
+         }
+    }
 }

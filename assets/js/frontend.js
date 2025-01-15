@@ -10,7 +10,7 @@ jQuery(document).ready(function($) {
         color: skstSettings.iconColor,
         width: `${skstSettings.buttonWidth}px`,
         height: `${skstSettings.buttonHeight}px`,
-        borderRadius: `${skstSettings.iconBorderRadius}px`,
+        borderRadius: `${skstSettings.buttonBorderRadius}px`,
         position: 'fixed',
         [skstSettings.buttonPosition.includes('left') ? 'left' : 'right']: `${skstSettings.buttonPositionX}px`,
         bottom: `${skstSettings.buttonPositionY}px`,
