@@ -1,5 +1,5 @@
 === SK Scroll to Top ===
-Contributors: Md. Jalal S K
+Contributors: jalal02
 Tags: scroll to top, scroll, smooth scroll
 Tested up to: 6.7
 Stable tag: 1.0.0
@@ -25,8 +25,19 @@ The "SK Scroll to Top" plugin adds a smooth, customizable Scroll to Top button f
 * No configuration required—just install and activate.
 
 == Changelog ==
+== Frequently Asked Questions ==
 
-= 1.0.0 =
+= A question that someone might have =
+
+An answer to that question.
+
+= Does this plugin work with PHP 8? =
+
+Yes, it's actively tested and working up to PHP 7.2 to 8.3.
+
+== Changelog ==
+
+= 1.0.0 (23 January 2025) =
 * Initial release of the SK Scroll to Top plugin.
 
 == Frequently Asked Questions ==
